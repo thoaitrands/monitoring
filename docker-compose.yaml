@@ -1,0 +1,40 @@
+version: "3.5" 
+services: 
+    influxdb2: 
+        image: influxdb:latest 
+        container_name: influxdb2 
+        ports: 
+            - "8086:8086" 
+        volumes: 
+            - ./influxdbv2/data:/var/lib/influxdb2 
+            - ./influxdbv2/config:/etc/influxdb2 
+        environment: 
+            - DOCKER_INFLUXDB_INIT_MODE=setup 
+            - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+            - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+            - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+            - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+            - DOCKER_INFLUXDB_INIT_RETENTION=1w 
+            - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+        restart: always 
+    telegraf: 
+        image: telegraf:latest 
+        container_name: telegraf 
+        ports: 
+            - "8092:8092" 
+            - "8094:8094" 
+            - "8125:8125" 
+        volumes: 
+            - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
+            - /var/run/docker.sock:/var/run/docker.sock:ro 
+            - /sys:/host/sys:ro 
+            - /proc:/host/proc:ro 
+            - /etc:/host/etc:ro 
+        environment: 
+            - HOST_PROC=/host/proc 
+            - HOST_SYS=/host/sys 
+            - HOST_ETC=/host/etc 
+            - ORG_CUS=ra6Org
+            - BUCKET_CUS=ra6Bucket
+            - TOKEN_CUS=axs776ffrjjkdTTYs
+        restart: always
